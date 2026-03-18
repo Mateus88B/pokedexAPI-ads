@@ -1,33 +1,26 @@
-const root = document.getElementById('root');
+const container = document.getElementById('card-container');
+const btn = document.getElementById('draw-btn');
 
-const getPokemonData = async () => {
+const getRandomPokemon = async () => {
+    container.innerHTML = '<p>Buscando...</p>';
+    
     try {
-        const response = await fetch('https://pokeapi.co/api/v2/pokemon?limit=15');
+        const randomId = Math.floor(Math.random() * 150) + 1;
+        const response = await fetch(`https://pokeapi.co/api/v2/pokemon/${randomId}`);
         const data = await response.json();
         
-        root.innerHTML = '';
-
-        for (const item of data.results) {
-            const res = await fetch(item.url);
-            const detail = await res.json();
-            renderCard(detail);
-        }
+        renderPokeCard(data);
     } catch (err) {
-        root.innerHTML = 'Erro ao carregar dados.';
+        container.innerHTML = '<p>Erro ao sortear. Tente de novo.</p>';
     }
 };
 
-const renderCard = (pokemon) => {
-    const div = document.createElement('div');
-    div.className = 'card';
-
-    div.innerHTML = `
+const renderPokeCard = (pokemon) => {
+    container.innerHTML = `
         <img src="${pokemon.sprites.front_default}" alt="${pokemon.name}">
         <h2>${pokemon.name}</h2>
         <p>Type: ${pokemon.types[0].type.name}</p>
     `;
-
-    root.appendChild(div);
 };
 
-getPokemonData();
+btn.addEventListener('click', getRandomPokemon);
